@@ -12,7 +12,7 @@
 
 #include "fdf.h"
 
-int		set_color(t_map *map, int z)
+int		set_color(t_map *map, double z)
 {
 	int		r;
 	int		g;
@@ -22,16 +22,20 @@ int		set_color(t_map *map, int z)
 	r = 42;
 	g = 242;
 	b = 42;
-	scale = (map->max_z + map->min_z) / 2;
+	scale = (map->max_z - map->min_z);
+	printf("Z of %f\n", z);
+	//printf("Min_z is %d, max_z is %d, Scale is %f\n", map->min_z, map->max_z, scale);
 	if (z < 0)
 	{
-		r -= (int)round(z * 200 / scale);
-		b -= (int)round(z * 200 / scale);
+		r -= (int)round(z * 2 * 40 / scale);
+		g -= (int)round(z * 2 * 240 / scale);
+		b -= (int)round(z * 2 * 420 / scale);
 	}
 	if (z > 0)
 	{
-		r += (int)round(z * 200 / scale);
-		b += (int)round(z * 200 / scale);
+		r += (int)round(z * 2 * 200 / scale);
+		b += (int)round(z * 2 * 200 / scale);
 	}
-	return ((r * 65535) + (b * 256) + g);
+	printf("R of %d G of %d B of %d\n", r, g, b);
+	return ((r * 65535) + (g * 256) + b);
 }

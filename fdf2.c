@@ -12,7 +12,7 @@
 
 #include "fdf.h"
 
-void	draw_pixel(t_map *map, int x, int y, int z)
+void	draw_pixel(t_map *map, int x, int y, double z)
 {
 	int		color;
 	char	*addr;
