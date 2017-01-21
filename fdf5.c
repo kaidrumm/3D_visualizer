@@ -34,6 +34,7 @@ void	center_screen(t_map *map)
 			pt->view_y = pt->view_y + (map->h / 2);
 		}
 	}
+	//puts("Centered on screen\n");
 }
 
 /*
@@ -53,16 +54,17 @@ void	center(t_map *map)
 		while (map->dots[j][++i] != NULL)
 		{
 			pt = map->dots[j][i];
-			printf("X = %f adjusted to %f\n", pt->x, pt->x - (map->max_x / 2));
+			//printf("X = %f adjusted to %f\n", pt->x, pt->x - (map->max_x / 2));
 			pt->x = pt->x - (map->max_x / 2);
-			printf("Y = %f adjusted to %f\n", pt->y, pt->y - (map->max_y / 2));
+			//printf("Y = %f adjusted to %f\n", pt->y, pt->y - (map->max_y / 2));
 			pt->y = pt->y - (map->max_y / 2);
-			printf("Z = %f adjusted to %f\n", pt->z, pt->z - ((map->max_z + map->min_z) / 2));
+			//printf("Z = %f adjusted to %f\n", pt->z, pt->z - ((map->max_z + map->min_z) / 2));
 			pt->z = pt->z - ((map->max_z + map->min_z) / 2);
 			pt->color = set_color(map, pt->z);
-			printf("Color is %06x\n", pt->color);
+			//printf("Color is %06x\n", pt->color);
 		}
 	}
+	//puts("Center done\n");
 }
 
 /*

@@ -31,19 +31,13 @@ t_pt	*new_point(int x, int y, int z)
 	return (pt);
 }
 
-void	start_window(t_map *map)
+void	display(t_map *map)
 {
-	map->w = 800;
-	map->h = 600;
-	map->cnx = mlx_init();
-	map->win = mlx_new_window(map->cnx, map->w, map->h, "FDF");
-	map->image_option = 1;
-	map->img = mlx_new_image(map->cnx, map->w, map->h);
-	map->addr = mlx_get_data_addr(map->img, &(map->bpp), &(map->bpl), &(map->endian));
-	printf("Image ptr is %p, Data addr is %p, bits per pixel %i, bytes per line %i, endian %i\n", map->img, map->addr, map->bpp, map->bpl, map->endian);
+	map->tile_w = map->w / (map->max_x * 2);
+	map->tile_h = map->h / (map->max_y * 2);
+	//printf("Image ptr is %p, Data addr is %p, bits per pixel %i, bytes per line %i, endian %i\n", map->img, map->addr, map->bpp, map->bpl, map->endian);
 	center(map);
 	helptext(map);
-	//project_perspective(map);
 	while (1)
 	{
 		mlx_key_hook(map->win, key_hook, map);
@@ -83,6 +77,7 @@ void	read_file(int fd, t_map *map)
 	}
 	map->max_y = y;
 	map->dots[y] = NULL;
+	puts("Read file complete\n");
 }
 
 void	init_map(t_map **map)
@@ -91,6 +86,16 @@ void	init_map(t_map **map)
 	(*map)->dots = (t_pt ***)malloc(sizeof(t_pt **) * 2000);
 	(*map)->max_x = 0;
 	(*map)->max_z = 0;
+	(*map)->w = 800;
+	(*map)->h = 600;
+	(*map)->cnx = mlx_init();
+	(*map)->win = mlx_new_window((*map)->cnx, (*map)->w, (*map)->h, "FDF");
+	(*map)->image_option = 1;
+	(*map)->projection_option = 1;
+	(*map)->img = mlx_new_image((*map)->cnx, (*map)->w, (*map)->h);
+	(*map)->addr = mlx_get_data_addr((*map)->img, &((*map)->bpp), &((*map)->bpl), &((*map)->endian));
+	puts("Map init complete\n");
+
 }
 
 /*
@@ -109,6 +114,6 @@ int		main(int ac, char **av)
 		ft_putendl("Error");
 	init_map(&map);
 	read_file(fd, map);
-	start_window(map);
+	display(map);
 	return (1);
 }
