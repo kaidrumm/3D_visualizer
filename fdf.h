@@ -82,7 +82,7 @@ void			rotate_y(t_map *map, double theta);
 
 // FDF 2: Drawing
 void			draw_pixel(t_map *map, int x, int y, double z);
-void			bresenham_retry(t_map *map, int ax, int ay, int az, int bx, int by, int bz);
+void			bresenham_retry(t_map *map, int ax, int ay, double az, int bx, int by, double bz);
 void			draw_bresenham(int ax, int ay, int az, int bx, int by, int bz, t_map *map);
 void			draw_line_v(t_pt *a, t_pt *b, t_map *map);
 void			draw_line_h(t_pt *a, t_pt *b, t_map *map);

@@ -32,20 +32,21 @@ void	draw_pixel(t_map *map, int x, int y, double z)
 		mlx_pixel_put(map->cnx, map->win, x, y, 0Xd56497);
 }
 
-void	bresenham_retry(t_map *map, int ax, int ay, int az, int bx, int by, int bz)
+void	bresenham_retry(t_map *map, int ax, int ay, double az, int bx, int by, double bz)
 {
 	int		x;
 	int		y;
-	int		z;
+	double	z;
 	int		dx;
 	int		dy;
-	int		dz;
+	double	dz;
 	int		sx;
 	int		sy;
-	int		sz;
+	//int		sz;
 	int		err;
-	int		errz;
+	//int		errz;
 	int		swap;
+	int		i;
 
 	printf("draw line from %i, %i to %i, %i\n", ax, ay, bx, by);
 	y = ay;
@@ -53,10 +54,10 @@ void	bresenham_retry(t_map *map, int ax, int ay, int az, int bx, int by, int bz)
 	z = az;
 	dx = ABS(bx - ax);
 	dy = ABS(by - ay);
-	dz = ABS(bz - az);
+	dz = bz - az;
 	sx = sign(bx - ax);
 	sy = sign(by - ay);
-	sz = sign(bz - az);
+	//sz = sign(bz - az);
 	err = ABS(dy - dx);
 	swap = 0;
 	printf("dx is %i, dy is %i, sx is %i, sy is %i\n", dx, dy, sx, sy);
@@ -65,13 +66,19 @@ void	bresenham_retry(t_map *map, int ax, int ay, int az, int bx, int by, int bz)
 	{
 		printf("Y is the driving axis\n");
 		swap = 1;
+		dz = dz / (double)(dy * sy);
 		ft_swap(&dx, &dy);
 	}
 	else
+	{
+		dz = dz / (double)(dx * sx);
 		printf("X is the driving axis.\n");
-	errz = ABS(dz - dx);
+	}
+	//errz = ABS(dz - dx);
 	//while ((x * sx <= bx && !swap) || (y * sy <= by && swap))
-	while ((swap && y * sy < by) || (!swap && x * sx < bx))
+	i = 0;
+	//while ((swap && y * sy < by) || (!swap && x * sx < bx))
+	while (i++ <= dx)
 	{
 		draw_pixel(map, x, y, z);
 		if (err >= 0)
@@ -82,139 +89,20 @@ void	bresenham_retry(t_map *map, int ax, int ay, int az, int bx, int by, int bz)
 		 		y += sy;
 			err -= dx;
 		}
-		if (errz >= 0)
-		{
-			z += sz;
-			errz -= dx;
-		}
+		// if (errz >= 0)
+		// {
+		// 	z += sz;
+		// 	errz -= dx;
+		// }
 		if (swap)
 			y += sy;
 		else
 			x += sx;
 		err += dy;
-		errz += dz;
+		z += dz;
 	}
 }
 
-void	draw_bresenham(int ax, int ay, int az, int bx, int by, int bz, t_map *map)
-{
-	int		x;
-	int		y;
-	double	z;
-	int		dx;
-	int		dy;
-	int		dz;
-	int		error;
-	int		swap;
-	int		temp;
-	int		s1;
-	int		s2;
-	int		s3;
-	int		i;
-
-	printf("draw line from %i, %i, %i to %i, %i, %i\n", ax, ay, az, bx, by, bz);
-	x = ax;
-	y = ay;
-	z = az;
-	dx = ABS(bx - ax);
-	dy = ABS(by - ay);
-	dz = ABS(bz - az);
-	s1 = sign(bx - ax);
-	s2 = sign(by - ay);
-	s3 = sign(bz - az);
-	swap = 0;
-	if (dy > dx)
-	{
-		temp = dx;
-		dx = dy;
-		dy = temp;
-		swap = 1;
-	}
-	error = 2 * dy - dx;
-	i = -1;
-	while (++i < dx)
-	{
-		draw_pixel(map, x, y, (double)z);
-		while (error >= 0)
-		{
-			error = error - 2 * dx;
-			if (swap)
-				x += s1;
-			else
-				y += s2;
-		}
-		error = error + 2 * dy;
-		if (swap)
-			y += s2;
-		else
-			x += s1;
-		z += s3;
-	}
-}
-
-void	draw_line_v(t_pt *a, t_pt *b, t_map *map)
-{
-	double	x;
-	double	y;
-	double	z;
-	double	dxdy;
-	double	dzdy;
-
-	printf("Drawing a vertical line between %f, %f and %f, %f\n", a->raw_x, a->raw_y, b->raw_x, b->raw_y);
-	if (a->y < b->y)
-	{
-		x = a->view_x;
-		y = a->view_y;
-		z = a->raw_z;
-	}
-	else
-	{
-		x = b->view_x;
-		y = b->view_y;
-		z = b->raw_z;
-	}
-	dxdy = (a->view_x - b->view_x) / (a->view_y - b->view_y);
-	dzdy = (a->z - b->z) / (a->view_y - b->view_y);
-	while (y <= a->view_y || y <= b->view_y)
-	{
-		draw_pixel(map, (int)round(x), (int)round(y), z);
-		x = x + dxdy;
-		z = z + dzdy;
-		y++;
-	}
-}
-
-void	draw_line_h(t_pt *a, t_pt *b, t_map *map)
-{
-	double	x;
-	double	y;
-	double	z;
-	double	dydx;
-	double	dzdx;
-
-	printf("Drawing a horizontal line between %f, %f and %f, %f\n", a->raw_x, a->raw_y, b->raw_x, b->raw_y);
-	if (a->x < b->x)
-	{
-		x = a->view_x;
-		y = a->view_y;
-		z = a->raw_z;
-	}
-	else
-	{
-		x = b->view_x;
-		y = b->view_y;
-		z = b->raw_z;
-	}
-	dydx = (a->view_y - b->view_y) / (a->view_x - b->view_x);
-	dzdx = (a->z - b->z) / (a->view_x - b->view_x);
-	while (x <= a->view_x || x <= b->view_x)
-	{
-		draw_pixel(map, (int)round(x), (int)round(y), z);
-		y = y + dydx;
-		z = z + dzdx;
-		x++;
-	}
-}
 
 /*
 ** At this point we should check if the line is totally out of range of the image view.
