@@ -33,7 +33,7 @@ void	project_isometric(t_map *map)
 			pt->view_y = (pt->x + pt->y - pt->z) * map->tile_h;
 		}
 	}
-	puts("Iso projection done\n");
+	//puts("Iso projection done\n");
 }
 
 /*
@@ -63,7 +63,7 @@ void	project_perspective(t_map *map)
 			//printf("Projected to %f, %f\n", pt->view_x, pt->view_y);
 		}
 	}
-	puts("Parallel projection done\n");
+	//puts("Parallel projection done\n");
 }
 
 void	rotate_z(t_map *map, double theta)

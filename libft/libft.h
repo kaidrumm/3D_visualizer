@@ -16,7 +16,7 @@
 # include <unistd.h>
 # include <stdlib.h>
 # define MALLOC_GUARD(x) if(!x) return (0);
-# define ABS(x) (x < 0) ? -(x) : (x)
+# define ABS(x) ((x) < 0) ? -(x) : (x)
 # define MAX(a, b) (a >= b) ? a : b
 
 /*

@@ -31,12 +31,9 @@ int		set_color(t_map *map, double z)
 	r = 0xff;
 	g = 0xff;
 	b = 0xff;
-	//printf("Finding color for Z of %f\n", z);
 	pos_scale = map->max_z;
 	neg_scale = map->min_z;
-	//scale = (map->max_z - map->min_z);
-	//printf("Min_z is %d, max_z is %d\n", map->min_z, map->max_z);
-	if (z < 0) // since Z is negative, it will still add
+	if (z < 0)
 	{
 		r -= (int)round(z * 215 / neg_scale);
 		g -= (int)round(z * 15 / neg_scale);
@@ -48,7 +45,5 @@ int		set_color(t_map *map, double z)
 		g -= (int)round(z * 215 / pos_scale);
 		b -= (int)round(z * 15 / pos_scale);
 	}
-	//printf("R of %d G of %d B of %d, total %i\n", r, g, b, (r * 0x10000) + (g * 0x100) + b);
-	//printf("min was %f and max was %f\n", neg_scale, pos_scale);
 	return ((r * 0x10000) + (g * 0x100) + b);
 }

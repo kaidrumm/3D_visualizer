@@ -20,7 +20,6 @@ t_pt	*new_point(int x, int y, int z)
 {
 	t_pt	*pt;
 
-	printf("New point at %d, %d, %d\n", x, y, z);
 	pt = (t_pt *)malloc(sizeof(t_pt));
 	pt->x = x;
 	pt->y = y;
@@ -35,7 +34,6 @@ void	display(t_map *map)
 {
 	map->tile_w = map->w / (map->max_x * 2);
 	map->tile_h = map->h / (map->max_y * 2);
-	//printf("Image ptr is %p, Data addr is %p, bits per pixel %i, bytes per line %i, endian %i\n", map->img, map->addr, map->bpp, map->bpl, map->endian);
 	center(map);
 	helptext(map);
 	while (1)
@@ -77,7 +75,6 @@ void	read_file(int fd, t_map *map)
 	}
 	map->max_y = y;
 	map->dots[y] = NULL;
-	puts("Read file complete\n");
 }
 
 void	init_map(t_map **map)
@@ -94,8 +91,6 @@ void	init_map(t_map **map)
 	(*map)->projection_option = 1;
 	(*map)->img = mlx_new_image((*map)->cnx, (*map)->w, (*map)->h);
 	(*map)->addr = mlx_get_data_addr((*map)->img, &((*map)->bpp), &((*map)->bpl), &((*map)->endian));
-	puts("Map init complete\n");
-
 }
 
 /*
