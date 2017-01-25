@@ -83,6 +83,10 @@ void	scale(t_map *map, double o)
 	}
 }
 
+/*
+** Perspective and isometric zooms should be handled differently.
+*/
+
 void	zoom_control(t_map *map, double o)
 {
 	if (map->projection_option == 1)

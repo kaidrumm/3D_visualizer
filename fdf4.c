@@ -44,7 +44,6 @@ int		expose_hook(t_map *map)
 
 int		key_hook2(int keycode, t_map *map)
 {
-	printf("Keycode is %d\n", keycode);
 	if (keycode == 49)
 		reset(map);
 	if (keycode == 76)
