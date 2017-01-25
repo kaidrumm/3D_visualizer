@@ -12,8 +12,6 @@
 
 #ifndef FDF_H
 # define FDF_H
-# define sign(x) ((x > 0) ? 1 : ((x < 0) ? -1 : 0))
-//# define sign(x) ((x > 0) ? 1 : -1)
 # include "libft/libft.h"
 # include "minilibx_macos/mlx.h"
 # include <math.h>
@@ -47,6 +45,8 @@ typedef struct	s_map
 	int			max_y;
 	int			min_z;
 	int			max_z;
+	int			z_dist;
+	int			z_scale;
 	int			bpp;
 	int			bpl;
 	int			endian;
@@ -56,43 +56,64 @@ typedef struct	s_map
 	int			tile_h;
 }				t_map;
 
-// FDF 6: Color
-int				set_color(t_map *map, double z);
+/*
+** FDF 6: Extra funk-tions
+*/
 
-// FDF 5: Scaling & Centering
+int				sign(int x);
+int				set_color(t_map *map, double z);
+int				helptext(t_map *map, int c, int (*f)(void *, void *, int,
+					int, int, char *));
+void			reset(t_map *map);
+
+/*
+** FDF 5: Scaling & Centering
+*/
+
 void			center_screen(t_map *map);
 void			center(t_map *map);
 void			scale(t_map *map, double o);
+void			zoom_control(t_map *map, double o);
 void			zoom(t_map *map, double o);
-void			reset(t_map *map);
 
-// FDF 4: Hook
-void			helptext(t_map *map);
-int				mouse_hook(int button, int x, int y, t_map *map);
+/*
+** FDF 4: Hook
+*/
+
+int				mouse_hook(void);
 int				expose_hook(t_map *map);
 int				key_hook2(int keycode, t_map *map);
 int				key_hook(int keycode, t_map *map);
+void			display(t_map *map);
 
-// FDF 3: Rotation
+/*
+** FDF 3: Rotation
+*/
+
 void			project_isometric(t_map *map);
 void			project_perspective(t_map *map);
 void			rotate_z(t_map *map, double theta);
 void			rotate_x(t_map *map, double theta);
 void			rotate_y(t_map *map, double theta);
 
-// FDF 2: Drawing
+/*
+** FDF 2: Drawing
+*/
+
 void			draw_pixel(t_map *map, int x, int y, double z);
-void			bresenham_retry(t_map *map, int ax, int ay, double az, int bx, int by, double bz);
-void			draw_bresenham(int ax, int ay, int az, int bx, int by, int bz, t_map *map);
-void			draw_line_v(t_pt *a, t_pt *b, t_map *map);
-void			draw_line_h(t_pt *a, t_pt *b, t_map *map);
+void			bresenham_pt2(t_map *map, double *z, int *ints);
+void			bresenham_pt1(t_map *map, t_pt *a, t_pt *b);
 void			draw_line(t_pt *a, t_pt *b, t_map *map);
 void			print_dots(t_map *map);
 
-// FDF 1: Setup
+/*
+** FDF 1: Setup
+*/
+
 t_pt			*new_point(int x, int y, int z);
-void			display(t_map *map);
-void			read_file(int fd, t_map *map);
-void			init_map(t_map **map);
+void			z_limits(t_map *map, int x);
+int				read_file(int fd, t_map *map);
+int				init_map(t_map **map);
+int				main(int ac, char **av);
 
 #endif

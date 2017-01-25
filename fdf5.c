@@ -83,6 +83,16 @@ void	scale(t_map *map, double o)
 	}
 }
 
+void	zoom_control(t_map *map, double o)
+{
+	if (map->projection_option == 1)
+		zoom(map, o);
+	else
+		map->z_dist /= o;
+	if (map->z_dist < (map->max_z - map->min_z))
+		map->z_dist = 42 * (map->max_z - map->min_z);
+}
+
 /*
 ** Applies a multiplier to the object's x and y dimensions
 */
@@ -104,25 +114,4 @@ void	zoom(t_map *map, double o)
 			pt->y = pt->y * o;
 		}
 	}
-}
-
-void	reset(t_map *map)
-{
-	int		i;
-	int		j;
-	t_pt	*pt;
-
-	j = -1;
-	while (map->dots[++j])
-	{
-		i = -1;
-		while (map->dots[j][++i])
-		{
-			pt = map->dots[j][i];
-			pt->x = pt->raw_x;
-			pt->y = pt->raw_y;
-			pt->z = pt->raw_z;
-		}
-	}
-	center(map);
 }

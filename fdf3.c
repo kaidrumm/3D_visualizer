@@ -33,12 +33,11 @@ void	project_isometric(t_map *map)
 			pt->view_y = (pt->x + pt->y - pt->z) * map->tile_h;
 		}
 	}
-	//puts("Iso projection done\n");
 }
 
 /*
-** This function applies prospective projection to the current x,y,z values and
-** saves the projection coordinates to view_x and view_y.
+** This function applies prospective projection to the current x,y,z values
+** and saves the projection coordinates to view_x and view_y.
 ** Used if projection_option = 2;
 */
 
@@ -57,13 +56,10 @@ void	project_perspective(t_map *map)
 		while (map->dots[j][++i] != NULL)
 		{
 			pt = map->dots[j][i];
-			//printf("Point at %f, %f, %f\n", pt->x, pt->y, pt->z);
-			pt->view_x = f * pt->x / (pt->z + 50);
-			pt->view_y = f * pt->y / (pt->z + 50);
-			//printf("Projected to %f, %f\n", pt->view_x, pt->view_y);
+			pt->view_x = f * pt->x / (pt->z + map->z_dist);
+			pt->view_y = f * pt->y / (pt->z + map->z_dist);
 		}
 	}
-	//puts("Parallel projection done\n");
 }
 
 void	rotate_z(t_map *map, double theta)

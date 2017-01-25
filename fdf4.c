@@ -12,46 +12,19 @@
 
 #include "fdf.h"
 
-void	helptext(t_map *map)
-{
-	mlx_string_put(map->cnx, map->win, 10, 10, 0xf4ce42, "Welcome to FDF by KaiDrumm!");
-	mlx_string_put(map->cnx, map->win, 10, 30, 0xf4ce42, "Press H to return to helptext at any time.");
-	mlx_string_put(map->cnx, map->win, 10, 50, 0xf4ce42, "Spacebar will reset the image to its initial view.");
-	mlx_string_put(map->cnx, map->win, 10, 70, 0xf4ce42, "Press ESC to exit (but you know you don't want to)");
-	mlx_string_put(map->cnx, map->win, 10, 90, 0xf4ce42, "Plus and minus will zoom in and out");
-	mlx_string_put(map->cnx, map->win, 10, 110, 0xf4ce42, "* and / will scale the Z axis for you,");
-	mlx_string_put(map->cnx, map->win, 10, 130, 0xf4ce42, "And = will flip the Z axis entirely.");
-	mlx_string_put(map->cnx, map->win, 10, 150, 0xf4ce42, "Numpad keys make it shift side to side or rotate.");
-	mlx_string_put(map->cnx, map->win, 10, 170, 0xf4ce42, "Enter will toggle between image setting vs pixel setting.");
-	mlx_string_put(map->cnx, map->win, 10, 190, 0xf4ce42, "On the number row, press 1 for isometric projection, or 2 for parallel.");
-	mlx_string_put(map->cnx, map->win, 10, 350, 0xf442a1, "Press any key to begin.");
-	// mlx_string_put(map->cnx, map->win, 10, 210, 0xf4ce42, "Welcome to FDF!");
-	// mlx_string_put(map->cnx, map->win, 10, 230, 0xf4ce42, "Welcome to FDF!");
-	// mlx_string_put(map->cnx, map->win, 10, 250, 0xf4ce42, "Welcome to FDF!");
-	// mlx_string_put(map->cnx, map->win, 10, 270, 0xf4ce42, "Welcome to FDF!");
-	// mlx_string_put(map->cnx, map->win, 10, 290, 0xf4ce42, "Welcome to FDF!");
-	// mlx_string_put(map->cnx, map->win, 10, 310, 0xf4ce42, "Welcome to FDF!");
-	// mlx_string_put(map->cnx, map->win, 10, 330, 0xf4ce42, "Welcome to FDF!");
-	// mlx_string_put(map->cnx, map->win, 10, 350, 0xf4ce42, "Welcome to FDF!");
-	//expose_hook(map);
-}
-
 /*
 ** Not currently used
 */
 
-int		mouse_hook(int button, int x, int y, t_map *map)
+int		mouse_hook(void)
 {
-	t_map *cpy;
-
-	cpy = map;
-	printf("Mouse says: %d (%d, %d)\n", button, x, y);
 	return (0);
 }
 
 /*
-** Image_option exists to demonstrate the speed improvements made by building an image
-** locally and then sending it to the window, versus sending one pixel at a time.
+** Image_option exists to demonstrate the speed improvements made by building
+** an image locally and then sending it to the window, versus sending one
+** pixel at a time.
 */
 
 int		expose_hook(t_map *map)
@@ -72,43 +45,61 @@ int		expose_hook(t_map *map)
 int		key_hook2(int keycode, t_map *map)
 {
 	printf("Keycode is %d\n", keycode);
-	if (keycode == 18) // numrow 1
+	if (keycode == 49)
+		reset(map);
+	if (keycode == 76)
+		map->image_option *= -1;
+	if (keycode == 18)
 		map->projection_option = 1;
-	if (keycode == 19) // numrow 2
+	if (keycode == 19)
 		map->projection_option = 2;
+	if (keycode == 4)
+		return (helptext(map, 0xf4ce42, mlx_string_put));
 	expose_hook(map);
 	return (1);
 }
 
 int		key_hook(int keycode, t_map *map)
 {
-	if (keycode == 53) // ESC
+	if (keycode == 53)
 		exit(0);
-	if (keycode == 76) // numpad enter
-		map->image_option *= -1;
-	if (keycode == 49) // Spacebar
-		reset(map);
-	if (keycode == 69) // plus
-		zoom(map, 1.5);
-	if (keycode == 78) // minus
-		zoom(map, .75);
+	if (keycode == 69)
+		zoom_control(map, 1.5);
+	if (keycode == 78)
+		zoom_control(map, .75);
 	if (keycode == 81)
 		scale(map, -1);
-	if (keycode == 67) // asterisk
+	if (keycode == 67)
 		scale(map, 1.5);
-	if (keycode == 75) // forward slash
+	if (keycode == 75)
 		scale(map, .75);
-	if (keycode == 89) // numpad 7
+	if (keycode == 89)
 		rotate_x(map, 0.1);
-	if (keycode == 91) // numpad 8
+	if (keycode == 91)
 		rotate_x(map, -0.1);
-	if (keycode == 86) // numpad 4
+	if (keycode == 86)
 		rotate_y(map, 0.1);
-	if (keycode == 87) // numpad 5
+	if (keycode == 87)
 		rotate_y(map, -0.1);
-	if (keycode == 83) // numpad 1
+	if (keycode == 83)
 		rotate_z(map, 0.1);
-	if (keycode == 84) // numpad 2
+	if (keycode == 84)
 		rotate_z(map, -0.1);
 	return (key_hook2(keycode, map));
+}
+
+void	display(t_map *map)
+{
+	map->tile_w = map->w / (map->max_x * 2);
+	map->tile_h = map->h / (map->max_y * 2);
+	map->z_dist = 4 * (map->max_z - map->min_z);
+	map->z_dist = (map->max_z - map->min_z);
+	center(map);
+	helptext(map, 0xf4ce42, mlx_string_put);
+	while (1)
+	{
+		mlx_key_hook(map->win, key_hook, map);
+		mlx_mouse_hook(map->win, mouse_hook, map);
+		mlx_loop(map->cnx);
+	}
 }

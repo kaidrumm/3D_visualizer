@@ -29,72 +29,81 @@ void	draw_pixel(t_map *map, int x, int y, double z)
 		mlx_pixel_put(map->cnx, map->win, x, y, 0Xd56497);
 }
 
-void	bresenham_retry(t_map *map, int ax, int ay, double az, int bx, int by, double bz)
+void	bresenham_pt2(t_map *map, double *z, int *ints)
 {
-	int		x;
-	int		y;
-	double	z;
-	int		dx;
-	int		dy;
-	double	dz;
-	int		sx;
-	int		sy;
-	int		sz;
-	int		err;
-	int		swap;
-	int		i;
-
-	y = ay;
-	x = ax;
-	z = az;
-	dx = ABS(bx - ax);
-	dy = ABS(by - ay);
-	dz = ABS(bz - az);
-	sx = sign(bx - ax);
-	sy = sign(by - ay);
-	sz = sign(bz - az);
-	err = ABS(dy - dx);
-	swap = 0;
-	if (dy > dx)
+	ints[9] = 0;
+	while (ints[9]++ <= ints[2])
 	{
-		swap = 1;
-		dz = dz * sz / (double)(dy);
-		ft_swap(&dx, &dy);
-	}
-	else
-		dz = dz * sz / (double)(dx);
-	i = 0;
-	while (i++ <= dx)
-	{
-		draw_pixel(map, x, y, z);
-		if (err >= 0)
+		draw_pixel(map, ints[0], ints[1], z[0]);
+		if (ints[7] >= 0)
 		{
-			if (swap)
-				x += sx;
+			if (ints[8])
+				ints[0] += ints[4];
 			else
-				y += sy;
-			err -= dx;
+				ints[1] += ints[5];
+			ints[7] -= ints[2];
 		}
-		if (swap)
-			y += sy;
+		if (ints[8])
+			ints[1] += ints[5];
 		else
-			x += sx;
-		err += dy;
-		z += dz;
+			ints[0] += ints[4];
+		ints[7] += ints[3];
+		z[0] += z[1];
 	}
 }
 
 /*
-** At this point we should check if the line is totally out of range of the image view.
+** Bresenham's equation uses more than the 5 variables allowed by Norm.
+** Here are the meanings of the arrays:
+** z[0] = z; z[1] = dz
+** ints[0] = x; ints[1] = y; ints[2] = dx; ints[3] = dy;
+** ints[4] = sign_x; ints[5] = sign_y; ints[6] = sign_z; ints[7] = error;
+** ints[8] = swap guiding axis flag; ints[9] = i (for the loop)
+*/
+
+void	bresenham_pt1(t_map *map, t_pt *a, t_pt *b)
+{
+	double	z[2];
+	int		ints[10];
+
+	ints[1] = (int)round(a->view_y);
+	ints[0] = (int)round(a->view_x);
+	z[0] = a->raw_z;
+	ints[2] = (int)round(ABS(b->view_x - a->view_x));
+	ints[3] = (int)round(ABS(b->view_y - a->view_y));
+	z[1] = ABS(b->raw_z - a->raw_z);
+	ints[4] = sign(b->view_x - a->view_x);
+	ints[5] = sign(b->view_y - a->view_y);
+	ints[6] = sign(b->raw_z - a->raw_z);
+	ints[7] = ABS(ints[3] - ints[2]);
+	ints[8] = 0;
+	if (ints[3] > ints[2])
+	{
+		ints[8] = 1;
+		z[1] = z[1] * ints[6] / (double)(ints[3]);
+		ft_swap(&ints[2], &ints[3]);
+	}
+	else
+		z[1] = z[1] * ints[6] / (double)(ints[2]);
+	bresenham_pt2(map, z, ints);
+}
+
+/*
+** At this point we check if the line is out of range of the image view.
 */
 
 void	draw_line(t_pt *a, t_pt *b, t_map *map)
 {
-	if ((a->view_x < 0 && b->view_x < 0) || (a->view_x > map->w && b->view_x > map->w)
-		|| (a->view_y < 0 && b->view_y < 0) || (a->view_y > map->h && b->view_y > map->h))
+	if ((a->view_x < 0 && b->view_x < 0) || (a->view_x > map->w && b->view_x >
+	map->w)
+		|| (a->view_y < 0 && b->view_y < 0) || (a->view_y > map->h && b->view_y
+		> map->h) || (a->view_x < 0 && b->view_x > map->w) || (b->view_x < 0 &&
+		a->view_x > map->w) || (a->view_y < 0 && b->view_y > map->w) ||
+		(b->view_y < 0 && a->view_y > map->w))
 		return ;
-	bresenham_retry(map, (int)round(a->view_x), (int)round(a->view_y), a->raw_z,
-		(int)round(b->view_x), (int)round(b->view_y), b->raw_z);
+	else if ((a->z + map->z_dist < 0) || (b->z + map->z_dist < 0))
+		return ;
+	bresenham_pt1(map, a, b);
 }
 
 void	print_dots(t_map *map)
